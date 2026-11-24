@@ -83,11 +83,18 @@
       </section>
 
       <section class="view result" id="view-result" aria-labelledby="result-weather" hidden>
-        <div class="result-stage page-width">
-          <article class="result-sheet" id="result-sheet">
+        <div class="result-stage page-width" id="result-stage">
+          <div class="result-waiting" id="result-waiting" role="status" aria-live="polite" aria-label="正在展开窗边文字">
+            <span class="wait-dot"></span>
+            <span class="wait-dot"></span>
+            <span class="wait-dot"></span>
+          </div>
+
+          <article class="result-sheet" id="result-sheet" hidden>
             <header class="result-hero">
               <div class="result-badges">
                 <span class="ios-pill-badge ios-pill-subtle" id="result-weather-tag"></span>
+                <button type="button" class="ios-close-btn" id="result-close-btn" aria-label="关闭文字，查看完整背景图" title="关闭文字">✕</button>
               </div>
               <div class="result-weather-row">
                 <h2 class="result-weather-title" id="result-weather" tabindex="-1"></h2>
@@ -108,7 +115,7 @@
             </section>
 
             <footer class="result-footer">
-              <p class="result-note">故事设定 · 愿你今天心情松快</p>
+              <p class="result-note">点击右上 ✕ 可收起文字看窗景</p>
               <div class="result-actions">
                 <button type="button" class="ios-btn ios-btn-glass" id="result-back-btn">
                   <span aria-hidden="true">‹</span> 上一幕
@@ -120,6 +127,11 @@
               </div>
             </footer>
           </article>
+
+          <div class="result-reopen-bar" id="result-reopen-bar" hidden>
+            <button type="button" class="ios-pill-btn" id="result-open-btn">展开文字</button>
+            <button type="button" class="ios-pill-btn" id="result-QuickRestart-btn">再坐一回 ↻</button>
+          </div>
         </div>
       </section>
 

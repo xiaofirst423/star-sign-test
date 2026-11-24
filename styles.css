@@ -121,7 +121,11 @@ body[data-view="quiz"] .bg-scrim {
 }
 body[data-view="result"] .bg-scrim {
   background:
-    linear-gradient(180deg, rgba(8, 16, 21, 0.26) 0%, rgba(8, 16, 21, 0.08) 30%, rgba(8, 16, 21, 0.28) 62%, rgba(8, 16, 21, 0.54) 100%);
+    linear-gradient(180deg, rgba(8, 16, 21, 0.22) 0%, rgba(8, 16, 21, 0.06) 32%, rgba(8, 16, 21, 0.22) 64%, rgba(8, 16, 21, 0.44) 100%);
+}
+body[data-view="result"]:is([data-result-phase="waiting"], [data-result-phase="closed"]) .bg-scrim {
+  background:
+    linear-gradient(180deg, rgba(8, 16, 21, 0.16) 0%, transparent 24%, transparent 78%, rgba(8, 16, 21, 0.22) 100%);
 }
 
 /* iOS Floating Header & Capsules */
@@ -662,33 +666,101 @@ body[data-view="cover"] .brand-pill {
   transform: scale(1.1);
 }
 
-/* Result View — Apple Weather x Warm Letter Card */
+/* Result View — Waiting Dots + Closable Apple Weather x Essay Card */
 .result-stage {
+  position: relative;
   display: grid;
   min-height: calc(100svh - var(--header-height));
   align-items: center;
-  padding-block: clamp(16px, 3svh, 36px) clamp(28px, 5svh, 48px);
+  padding-block: clamp(16px, 3svh, 32px) clamp(24px, 4.5svh, 44px);
 }
+.result-waiting {
+  place-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(14, 22, 28, 0.30);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 12px 32px rgba(0, 0, 0, 0.20);
+  animation: float-in 260ms var(--spring) both;
+}
+.wait-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 252, 246, 0.92);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
+  animation: dot-bounce 1.05s ease-in-out infinite;
+}
+.wait-dot:nth-child(2) { animation-delay: 0.16s; }
+.wait-dot:nth-child(3) { animation-delay: 0.32s; }
+@keyframes dot-bounce {
+  0%, 70%, 100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  35% {
+    transform: translateY(-7px);
+    opacity: 1;
+  }
+}
+
 .result-sheet {
-  width: min(100%, 660px);
+  width: min(100%, 600px);
   margin-inline: auto;
-  padding: clamp(24px, 3vw, 32px);
+  padding: clamp(20px, 2.6vw, 28px);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 28px;
-  background: rgba(14, 23, 29, 0.48);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 22px 54px rgba(4, 10, 15, 0.28);
-  text-shadow: 0 1px 8px rgba(4, 10, 14, 0.48);
+  border-radius: 26px;
+  background: rgba(14, 23, 29, 0.38);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 20px 48px rgba(4, 10, 15, 0.22);
+  text-shadow: 0 1px 8px rgba(4, 10, 14, 0.58), 0 1px 2px rgba(4, 10, 14, 0.38);
 }
 .result-sheet.is-entering {
   animation: float-in 420ms var(--spring) both;
 }
+.result-sheet.is-closing {
+  animation: sheet-close 200ms var(--spring) both;
+}
+@keyframes sheet-close {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(10px) scale(0.975); }
+}
 .result-badges {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ios-close-btn {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 253, 249, 0.90);
+  font-size: 13px;
+  line-height: 1;
+  transition: transform 160ms var(--spring), background-color 160ms var(--spring), border-color 160ms var(--spring);
+}
+.ios-close-btn:active {
+  transform: scale(0.90);
+}
+.result-reopen-bar {
+  align-self: end;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  animation: float-in 280ms var(--spring) both;
 }
 .ios-pill-badge {
   display: inline-flex;
@@ -799,8 +871,9 @@ body[data-view="cover"] .brand-pill {
   .brand-pill:hover,
   .ios-pill-btn:hover,
   .ios-back-pill:hover,
-  .ios-btn-glass:hover {
-    background: rgba(255, 255, 255, 0.18);
+  .ios-btn-glass:hover,
+  .ios-close-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
     border-color: var(--glass-border-strong);
   }
   body[data-view="cover"] .brand-pill:hover {
@@ -877,81 +950,102 @@ body[data-view="cover"] .brand-pill {
     font-size: 14.5px;
   }
   .setup {
-    align-content: start;
-    gap: 20px;
-    padding-block: 20px 28px;
+    align-content: end;
+    gap: 14px;
+    padding-block: 24px max(22px, env(safe-area-inset-bottom));
+  }
+  .setup-header h2 {
+    margin-top: 8px;
+    font-size: 24px;
+  }
+  .setup-header p {
+    margin-top: 4px;
+    font-size: 13.5px;
   }
   .zodiac-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
   .zodiac-tile {
-    min-height: 62px;
-    padding: 11px 12px;
-    gap: 9px;
-    grid-template-columns: 30px minmax(0, 1fr) auto;
-    border-radius: 16px;
+    min-height: 46px;
+    padding: 8px 10px;
+    gap: 7px;
+    grid-template-columns: 24px minmax(0, 1fr);
+    border-radius: 14px;
+    background: rgba(16, 26, 34, 0.36);
+    backdrop-filter: blur(12px) saturate(135%);
+    -webkit-backdrop-filter: blur(12px) saturate(135%);
   }
   .zodiac-glyph {
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
+    width: 24px;
+    height: 24px;
+    font-size: 15px;
+    border-radius: 8px;
   }
-  .zodiac-name { font-size: 14.5px; }
-  .zodiac-dates { font-size: 11px; }
+  .zodiac-name { font-size: 13.5px; }
+  .zodiac-dates,
+  .zodiac-arrow { display: none; }
 
   .quiz-stage {
-    padding-block: clamp(56px, 11svh, 110px) max(18px, env(safe-area-inset-bottom));
+    padding-block: clamp(72px, 16svh, 150px) max(16px, env(safe-area-inset-bottom));
   }
   .quiz-prompt-card {
-    padding: 17px 18px 18px;
-    border-radius: 20px;
+    padding: 13px 15px 14px;
+    border-radius: 18px;
   }
-  .quiz-topbar { margin-bottom: 10px; }
-  .story-bridge { font-size: 13px; padding: 5px 10px; }
-  .story-prompt { font-size: 14.5px; line-height: 1.65; }
-  .question-heading { font-size: 18px; }
+  .quiz-topbar { margin-bottom: 7px; }
+  .story-prompt { font-size: 13.5px; line-height: 1.55; }
+  .question-heading { margin-top: 4px; font-size: 16px; line-height: 1.38; }
   .option-list {
     grid-template-columns: minmax(0, 1fr);
-    gap: 9px;
-    margin-top: 10px;
+    gap: 7px;
+    margin-top: 8px;
   }
   .option-choice {
-    min-height: 52px;
-    padding: 12px 14px;
-    border-radius: 16px;
-    font-size: 14.5px;
-    gap: 10px;
+    min-height: 44px;
+    padding: 9px 13px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    line-height: 1.4;
+    gap: 9px;
+    grid-template-columns: 22px minmax(0, 1fr);
   }
   .option-letter {
-    width: 25px;
-    height: 25px;
-    font-size: 11.5px;
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
   }
 
   .result-stage {
     align-items: end;
-    padding-block: 20px max(20px, env(safe-area-inset-bottom));
+    padding-block: 16px max(18px, env(safe-area-inset-bottom));
+  }
+  .result-waiting {
+    align-self: center;
   }
   .result-sheet {
-    padding: 22px 20px;
-    border-radius: 24px;
+    padding: 18px 17px;
+    border-radius: 22px;
   }
-  .result-weather-title { font-size: 24px; }
-  .result-temp { font-size: 28px; }
-  .result-scene-text { font-size: 14.5px; line-height: 1.76; }
-  .result-letter { font-size: 15px; line-height: 1.8; }
+  .result-weather-row { margin-top: 10px; }
+  .result-weather-title { font-size: 21px; }
+  .result-temp { font-size: 24px; }
+  .result-section { margin-top: 14px; }
+  .result-section-label { margin-bottom: 5px; font-size: 12px; }
+  .result-scene-text { font-size: 13.5px; line-height: 1.68; }
+  .ios-divider { margin: 13px 0; }
+  .result-letter { gap: 8px; font-size: 14px; line-height: 1.72; }
   .result-footer {
-    flex-direction: column-reverse;
-    align-items: stretch;
-    gap: 12px;
+    margin-top: 16px;
+    padding-top: 12px;
+    gap: 10px;
   }
-  .result-actions {
-    margin-inline-start: 0;
-    display: grid;
-    grid-template-columns: 1fr 1.25fr;
+  .result-note { font-size: 11.5px; }
+  .result-actions .ios-btn {
+    min-height: 36px;
+    padding: 6px 14px;
+    font-size: 13px;
   }
-  .result-note { text-align: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

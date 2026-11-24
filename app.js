@@ -46,6 +46,8 @@
     answers: [],
   };
   let advanceTimer = null;
+  let resultWaitTimer = null;
+  let resultCloseTimer = null;
 
   function span(className, text) {
     const element = document.createElement('span');
@@ -222,13 +224,22 @@
     path.replaceChildren(...items);
   }
 
+  function clearResultTimers() {
+    clearTimeout(resultWaitTimer);
+    clearTimeout(resultCloseTimer);
+    resultWaitTimer = null;
+    resultCloseTimer = null;
+  }
+
   function showView(name) {
     clearTimeout(advanceTimer);
     advanceTimer = null;
+    clearResultTimers();
     setRulesOpen(false);
     state.view = name;
     for (const [key, section] of Object.entries(views)) section.hidden = key !== name;
     document.body.dataset.view = name;
+    if (name !== 'result') delete document.body.dataset.resultPhase;
 
     if (name === 'cover') {
       setBackground('assets/scenes/autumn-street-original.jpg', 50, 'cover');
@@ -245,7 +256,9 @@
     if (name === 'quiz') renderQuestion();
     if (name === 'result') renderResult();
     renderJourney();
-    views[name].querySelector('h1, h2')?.focus({ preventScroll: true });
+    if (name !== 'result') {
+      views[name].querySelector('h1, h2')?.focus({ preventScroll: true });
+    }
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
@@ -322,6 +335,40 @@
     }
   }
 
+  function openResultSheet() {
+    clearResultTimers();
+    const waiting = byId('result-waiting');
+    const sheet = byId('result-sheet');
+    const reopenBar = byId('result-reopen-bar');
+
+    waiting.hidden = true;
+    reopenBar.hidden = true;
+    sheet.hidden = false;
+    sheet.classList.remove('is-closing');
+    sheet.classList.remove('is-entering');
+    void sheet.offsetWidth;
+    sheet.classList.add('is-entering');
+    document.body.dataset.resultPhase = 'open';
+    byId('result-weather')?.focus({ preventScroll: true });
+  }
+
+  function closeResultSheet() {
+    clearResultTimers();
+    const sheet = byId('result-sheet');
+    const reopenBar = byId('result-reopen-bar');
+    if (sheet.hidden) return;
+
+    document.body.dataset.resultPhase = 'closed';
+    sheet.classList.remove('is-entering');
+    sheet.classList.add('is-closing');
+    resultCloseTimer = setTimeout(() => {
+      sheet.hidden = true;
+      sheet.classList.remove('is-closing');
+      reopenBar.hidden = false;
+      byId('result-open-btn')?.focus({ preventScroll: true });
+    }, 200);
+  }
+
   function renderResult() {
     const { zodiac, answers } = state;
     const result = getOutcome(zodiac, '', answers);
@@ -338,10 +385,18 @@
     views.result.dataset.weather = result.weather;
     setBackground(photoPath(result.weather), resultPhotoPositions[result.weather] ?? 60, 'scene');
 
+    const waiting = byId('result-waiting');
     const sheet = byId('result-sheet');
-    sheet.classList.remove('is-entering');
-    void sheet.offsetWidth;
-    sheet.classList.add('is-entering');
+    const reopenBar = byId('result-reopen-bar');
+    sheet.hidden = true;
+    sheet.classList.remove('is-entering', 'is-closing');
+    reopenBar.hidden = true;
+    waiting.hidden = false;
+    document.body.dataset.resultPhase = 'waiting';
+
+    resultWaitTimer = setTimeout(() => {
+      if (state.view === 'result') openResultSheet();
+    }, 2000);
   }
 
   function restart() {
@@ -368,6 +423,14 @@
 
   byId('result-back-btn').addEventListener('click', () => goToQuestion(QUESTIONS.length - 1));
   byId('restart-btn').addEventListener('click', restart);
+  byId('result-QuickRestart-btn').addEventListener('click', restart);
+  byId('result-close-btn').addEventListener('click', closeResultSheet);
+  byId('result-open-btn').addEventListener('click', openResultSheet);
+  byId('result-stage').addEventListener('click', (event) => {
+    if (event.target === byId('result-stage') && document.body.dataset.resultPhase === 'open') {
+      closeResultSheet();
+    }
+  });
 
   function setRulesOpen(open) {
     rulesNote.hidden = !open;
