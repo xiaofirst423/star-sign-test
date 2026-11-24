@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#121b20">
+    <meta name="description" content="南门外那家店还亮着灯。走过八幕午后小故事，看看窗外的天气与留给你的一段暖心话。">
+    <title>窗边还有个空位 · 南门外</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+    <script src="data.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body data-view="cover">
+    <div class="bg-stage" id="bg-stage" aria-hidden="true">
+      <img class="bg-photo is-active" id="bg-photo-a" src="assets/scenes/autumn-street-original.jpg" alt="" width="1280" height="2276" fetchpriority="high" decoding="async" data-mode="cover">
+      <img class="bg-photo" id="bg-photo-b" alt="" decoding="async">
+      <div class="bg-scrim"></div>
+    </div>
+
+    <header class="site-header page-width">
+      <div class="nav-cluster">
+        <button type="button" class="brand-pill" id="brand-btn" aria-label="返回首页">南门外</button>
+        <nav class="journey" id="journey" aria-label="故事导航" hidden>
+          <ol class="journey-path" id="journey-path"></ol>
+        </nav>
+      </div>
+      <div class="rules-control" id="rules-control">
+        <button type="button" class="ios-pill-btn rules-button" id="rules-btn" aria-expanded="false" aria-controls="rules-note">玩法</button>
+        <div class="rules-popover" id="rules-note" hidden>
+          <p>选一个星座，走过八幕午后小事。你的选择会映出窗外的天气，也会留下一封写给你的窗边短笺。</p>
+          <p>故事设定，供休闲放松。</p>
+        </div>
+      </div>
+    </header>
+
+    <main id="app">
+      <section class="view cover" id="view-cover" aria-labelledby="cover-title">
+        <div class="cover-layout page-width">
+          <div class="cover-copy">
+            <span class="ios-eyebrow">南门外 · 八幕慢问答</span>
+            <h1 id="cover-title" tabindex="-1">窗边还有个空位</h1>
+            <p>穿过午后的树影，进店歇口气吧</p>
+            <div class="cover-actions">
+              <button type="button" class="ios-btn ios-btn-primary cover-entrance" id="start-btn">
+                <span>推门进店</span>
+                <span class="btn-chevron" aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view setup page-width" id="view-zodiac" aria-labelledby="zodiac-title" hidden>
+        <div class="setup-header">
+          <span class="ios-eyebrow">第一步 · 星座底色</span>
+          <h2 id="zodiac-title" tabindex="-1">在星图上找找你</h2>
+          <p>你的星座，会为今天窗外定下第一层天气底色</p>
+        </div>
+        <div class="zodiac-grid" id="zodiac-grid" role="group" aria-labelledby="zodiac-title"></div>
+      </section>
+
+      <section class="view quiz" id="view-quiz" aria-labelledby="question-title" hidden>
+        <div class="quiz-stage page-width">
+          <div class="quiz-sheet" id="quiz-card">
+            <div class="quiz-prompt-card">
+              <div class="quiz-topbar">
+                <div class="quiz-meta-left">
+                  <button type="button" class="ios-back-pill" id="previous-btn" hidden aria-label="返回上一幕">
+                    <span aria-hidden="true">‹</span> 上一幕
+                  </button>
+                  <p class="story-location" id="chapter-name"></p>
+                </div>
+                <div class="ios-dots" id="quiz-dots" aria-hidden="true"></div>
+                <span class="sr-only" id="chapter-count"></span>
+              </div>
+              <p class="story-prompt" id="story-prompt"></p>
+              <h2 class="question-heading" id="question-title" tabindex="-1"></h2>
+            </div>
+            <div class="option-list" id="option-list" role="group" aria-labelledby="question-title"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view result" id="view-result" aria-labelledby="result-weather" hidden>
+        <div class="result-stage page-width">
+          <article class="result-sheet" id="result-sheet">
+            <header class="result-hero">
+              <div class="result-badges">
+                <span class="ios-pill-badge ios-pill-subtle" id="result-weather-tag"></span>
+              </div>
+              <div class="result-weather-row">
+                <h2 class="result-weather-title" id="result-weather" tabindex="-1"></h2>
+                <span class="result-temp" id="result-temp"></span>
+              </div>
+            </header>
+
+            <section class="result-section" aria-label="窗外天气">
+              <h3 class="result-section-label">窗外此刻</h3>
+              <p class="result-scene-text" id="result-scene-note"></p>
+            </section>
+
+            <hr class="ios-divider" aria-hidden="true">
+
+            <section class="result-section" aria-label="写在离店前">
+              <h3 class="result-section-label">写在离店前</h3>
+              <div class="result-letter" id="result-verdict"></div>
+            </section>
+
+            <footer class="result-footer">
+              <p class="result-note">故事设定 · 愿你今天心情松快</p>
+              <div class="result-actions">
+                <button type="button" class="ios-btn ios-btn-glass" id="result-back-btn">
+                  <span aria-hidden="true">‹</span> 上一幕
+                </button>
+                <button type="button" class="ios-btn ios-btn-primary" id="restart-btn">
+                  <span>再坐一回</span>
+                  <span class="btn-chevron" aria-hidden="true">↻</span>
+                </button>
+              </div>
+            </footer>
+          </article>
+        </div>
+      </section>
+
+      <noscript><p class="noscript-note page-width">请开启 JavaScript，继续窗边的故事。</p></noscript>
+    </main>
+  </body>
+</html>
